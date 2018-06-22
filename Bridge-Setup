@@ -1,0 +1,9 @@
+./vpncmd localhost:443 /SERVER /PASSWORD:LetMeIn! /CMD
+
+ServerPasswordSet LetMeIn!
+#HubCreate LOCAL
+BridgeCreate BRIDGE /DEVICE:br0
+Hub BRIDGE
+CascadeCreate DDCVPN /SERVER:204.27.147.101:5555 /HUB:10020 /USERNAME:10020
+CascadePasswordSet DDCVPN /PASSWORD:LetMeIn! /TYPE:STANDARD
+CascadeOnline DDCVPN
