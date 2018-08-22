@@ -1,0 +1,38 @@
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# enp1s0 is WAN interface,
+# br0 is LAN bridge interface
+# wg0 is Wiregurad interface
+-A POSTROUTING -o enp1s0 -j MASQUERADE
+
+COMMIT
+
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# basic global accept rules - ICMP, loopback, traceroute, established all accepted
+# -A INPUT -s 127.0.0.0/8 -d 127.0.0.0/8 -i lo -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i br0 -s 192.168.0.0/24 -j ACCEPT
+-A INPUT -i enp1s0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Service rules
+# Remote management SSH - accept from WAN
+-A INPUT -p tcp --dport 220 -j ACCEPT
+
+# DNS/DHCP - accept from LAN
+-A INPUT -i br0 -p tcp --dport 53 -j ACCEPT
+-A INPUT -i br0 -p udp --dport 53 -j ACCEPT
+-A INPUT -i br0 -p udp --dport 67:68 -j ACCEPT
+
+# Log and drop invalid packets
+-A INPUT -m conntrack --ctstate INVALID -j LOG --log-prefix "iptables dropped: " --log-level 7
+-A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
+
+COMMIT
