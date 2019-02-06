@@ -1,4 +1,4 @@
-p# acme.vpn
+acme.vpn
 
 dev.acme.vpn client router development notes
 
