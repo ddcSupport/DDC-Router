@@ -1,0 +1,50 @@
+## signup.php
+
+1. Pick a name for your storage. 		[       ].duradisk.com
+	GET DDC_HOST
+
+2. (Optional) Add a name from your own domain. 	[                     ]
+	GET OWN_HOST
+	NOTE - Verify valid host and domain. If no host exists; instructions notice.
+
+
+3. [ ]Standard [ ]Workgroup [ ]Enterprise
+	GET PACKAGE
+
+4. Admin login [e-mail] Password [crypt]
+	- root pw	[          ] <- GET ROOT_PW
+	- admin pw	[          ] <- GET ADMN_PW
+	- SSH Key	[       ...] <- GET SSH_KEY
+
+5. [ ]Credit Card [ ]Paypal
+
+insert admin, password into accounts;
+select OWNER_UUID from accounts where admin and password;
+create VM_UUID;
+insert OWNER_UUID, VM_UUID, package into machines;
+
+Write_Order to "/opt/jobs/create_$UUID" on "admXX" zone. GZ cron will pick it up.
+write_to_json:
+"uuid":"$VM_UUID"
+"owner_uuid":"$OWNER_UUID"
+"hostname":"$DDC_HOST"
+"nodename":"$DDC_HOST"
+"package_name":"$PACKAGE"
+"max_physical_memory":"$PACKAGE[1]"
+"quota":"$PACKAGE[2]"
+"customer_metadata":[
+   "own_host":"$OWN_HOST",
+   "root_pw": "$ROOT_PW",
+   "admin_pw": "$ADMN_PW"
+   "ssh_keys":"$SSH_KEY...",
+   "user-script" : "/usr/sbin/mdata-get root_authorized_keys > ~root/.ssh/authorized_keys;/usr/sbin/mdata-get root_authorized_keys > ~admin/.ssh/authorized_keys"
+]
+
+create_vm:
+
+get_networking:
+GET MAC_ADDR
+GET IP
+write DHCP reservation?
+update DNS internal entries with IP+DDC_HOST and IP+OWN_HOST
+update DNS external entries {?wildcard DNS?}
