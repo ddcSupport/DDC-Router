@@ -1,6 +1,6 @@
-# DDC-Router
+p# acme.vpn
 
-DDC Router development notes
+dev.acme.vpn client router development notes
 
 1. Router Hardware
 2. Router OS
